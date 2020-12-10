@@ -20,7 +20,6 @@ class Register extends React.Component {
     passwordConfirmation: "",
     errors: [],
     loading: false,
-    usersRef: firebase.database().ref("users"),
   };
 
   isFormValid = () => {
@@ -67,33 +66,23 @@ class Register extends React.Component {
   };
 
   handleSubmit = (event) => {
-    event.preventDefault();
     if (this.isFormValid()) {
+      event.preventDefault();
       this.setState({ errors: [], loading: true });
       firebase
         .auth()
         .createUserWithEmailAndPassword(this.state.email, this.state.password)
         .then((createdUser) => {
           console.log(createdUser);
-          createdUser.user
-            .updateProfile({
-              displayName: this.state.username,
-              photoURL: `http://gravatar.com/avatar/${md5(
-                createdUser.user.email
-              )}?d=identicon`,
-            })
-            .then(() => {
-              this.saveUser(createdUser).then(() => {
-                console.log("user saved");
-              });
-            })
-            .catch((err) => {
-              console.error(err);
-              this.setState({
-                errors: this.state.errors.concat(err),
-                loading: false,
-              });
-            });
+          createdUser.user.updateProfile({
+            displayName: this.state.username,
+            photoURL: `http://gravatar.com/avatar/${md5(
+              createdUser.user.email
+            )}?d=identicon`,
+          });
+        })
+        .then(() => {
+          this.setState({ loading: false });
         })
         .catch((err) => {
           console.error(err);
@@ -105,19 +94,10 @@ class Register extends React.Component {
     }
   };
 
-  saveUser = (createdUser) => {
-    return this.state.usersRef.child(createdUser.user.uid).set({
-      name: createdUser.user.displayName,
-      avatar: createdUser.user.photoURL,
-    });
-  };
-
   handleInputError = (errors, inputName) => {
-    return errors.some((error) =>
-      error.message.toLowerCase().includes(inputName)
-    )
-      ? "error"
-      : "";
+    errors.some((error) =>
+      error.message.toLowerCase().includes(inputName) ? "error" : ""
+    );
   };
 
   render() {
@@ -147,6 +127,7 @@ class Register extends React.Component {
                 placeholder="Username"
                 onChange={this.handleChange}
                 value={username}
+                className={this.handleInputError(errors, "username")}
                 type="text"
               />
 
