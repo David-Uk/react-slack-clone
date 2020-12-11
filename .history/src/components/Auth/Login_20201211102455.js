@@ -26,27 +26,12 @@ class Login extends React.Component {
     this.setState({ [event.target.name]: event.target.value });
   };
 
-  handleSubmit = (event) => {
-    event.preventDefault();
-    if (this.isFormValid(this.state)) {
-      this.setState({ errors: [], loading: true });
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(this.state.email, this.state.password)
-        .then((signedInUser) => {
-          console.log(signedInUser);
+    handleSubmit = (event) => {
+        event.preventDefault();
+        if (this.isFormValid()) {
+            this.setState({ errors: [], loading: true });
         })
-        .catch((err) => {
-          console.log(err);
-          this.setState({
-            error: this.state.errors.concat(err),
-            loading: false,
-          });
-        });
     }
-  };
-
-  isFormValid = ({ email, password }) => email && password;
 
   handleInputError = (errors, inputName) => {
     return errors.some((error) =>
@@ -57,17 +42,34 @@ class Login extends React.Component {
   };
 
   render() {
-    const { email, password, errors, loading } = this.state;
+    const {
+      username,
+      email,
+      password,
+      errors,
+      loading,
+    } = this.state;
 
     return (
       <Grid textAlign="center" verticalAlign="middle" className="app">
         <Grid.Column style={{ maxWidth: 450 }}>
           <Header as="h2" icon color="violet" textAlign="center">
-            <Icon name="code branch" color="violet" />
+            <Icon name="puzzle piece" color="orange" />
             Login for DevChat
           </Header>
           <Form onSubmit={this.handleSubmit} size="large">
             <Segment stacked>
+              <Form.Input
+                fluid
+                name="username"
+                icon="user"
+                iconPosition="left"
+                placeholder="Username"
+                onChange={this.handleChange}
+                value={username}
+                type="text"
+              />
+
               <Form.Input
                 fluid
                 name="email"
@@ -92,10 +94,22 @@ class Login extends React.Component {
                 type="password"
               />
 
+              <Form.Input
+                fluid
+                name="passwordConfirmation"
+                icon="repeat"
+                iconPosition="left"
+                placeholder="Password Confirmation"
+                onChange={this.handleChange}
+                value={passwordConfirmation}
+                className={this.handleInputError(errors, "password")}
+                type="password"
+              />
+
               <Button
                 disabled={loading}
                 className={loading ? "loading" : ""}
-                color="violet"
+                color="orange"
                 fluid
                 size="large"
               >
@@ -110,7 +124,7 @@ class Login extends React.Component {
             </Message>
           )}
           <Message>
-            Don't have an account?<Link to="/register">Register</Link>
+            Already a user? <Link to="/login">Login</Link>
           </Message>
         </Grid.Column>
       </Grid>

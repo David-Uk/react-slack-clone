@@ -28,25 +28,10 @@ class Login extends React.Component {
 
   handleSubmit = (event) => {
     event.preventDefault();
-    if (this.isFormValid(this.state)) {
+    if (this.isFormValid()) {
       this.setState({ errors: [], loading: true });
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(this.state.email, this.state.password)
-        .then((signedInUser) => {
-          console.log(signedInUser);
-        })
-        .catch((err) => {
-          console.log(err);
-          this.setState({
-            error: this.state.errors.concat(err),
-            loading: false,
-          });
-        });
     }
   };
-
-  isFormValid = ({ email, password }) => email && password;
 
   handleInputError = (errors, inputName) => {
     return errors.some((error) =>
@@ -57,13 +42,13 @@ class Login extends React.Component {
   };
 
   render() {
-    const { email, password, errors, loading } = this.state;
+    const { username, email, password, errors, loading } = this.state;
 
     return (
       <Grid textAlign="center" verticalAlign="middle" className="app">
         <Grid.Column style={{ maxWidth: 450 }}>
           <Header as="h2" icon color="violet" textAlign="center">
-            <Icon name="code branch" color="violet" />
+            <Icon name="puzzle piece" color="orange" />
             Login for DevChat
           </Header>
           <Form onSubmit={this.handleSubmit} size="large">
@@ -110,7 +95,7 @@ class Login extends React.Component {
             </Message>
           )}
           <Message>
-            Don't have an account?<Link to="/register">Register</Link>
+            Already a user? <Link to="/login">Login</Link>
           </Message>
         </Grid.Column>
       </Grid>
